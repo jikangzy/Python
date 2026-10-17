@@ -1,0 +1,31 @@
+name: OpenSpec Agent Orchestrator MVP
+
+on:
+  pull_request:
+    paths:
+      - "openspec-agent-orchestrator/**"
+      - ".github/workflows/openspec-agent-orchestrator.yml"
+  push:
+    branches:
+      - "feat/openspec-agent-orchestrator-mvp"
+    paths:
+      - "openspec-agent-orchestrator/**"
+      - ".github/workflows/openspec-agent-orchestrator.yml"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: openspec-agent-orchestrator
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Unit tests
+        run: python -m unittest discover -s tests -v
+      - name: Doctor
+        run: python orchestrator.py doctor --workspace examples/demo --change demo
+      - name: Smoke run
+        run: python orchestrator.py run --workspace examples/demo --change demo --adapter mock --timeout 10
